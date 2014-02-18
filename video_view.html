@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<meta charset="UTF-8">
+	<script type="text/javascript" src="script.js"></script>
+	<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+	<div id="control_panel">
+		<div>
+			<p>Количество видео на странице:</p>
+			<input type="number" id="video_count" readonly="readonly">
+		</div>
+		
+		<div>
+			<button type="button" id="back_button">Назад</button>
+			<p>Текущая страница: </p>
+			<input type="number" id="current_page">
+			<button type="button" id="forw_button">Вперед</button>
+		</div>
+		
+		<div>
+			<button type="button" id="refresh_button">Обновить</button>
+			<p id="search_result"></p>
+		</div>
+		
+		<div>
+			<p id="console"></p>
+		</div>
+
+		<select id="select_status">
+			<option value="all">Все</option>
+			<option value="pirate">Пиратские</option>
+			<option value="other">Остальные</option>
+		<select>
+	</div>
+	
+	<hr>
+
+	<div id="video_container"></div>
+
+	<footer>
+		<a href="#" class="go-top">&uarr; вверх &uarr;</a>
+	</footer>
+
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+	<script>
+		$(document).ready(function() {
+			// Show or hide the sticky footer button
+			$(window).scroll(function() {
+				if ($(this).scrollTop() > 200) {
+					$('.go-top').fadeIn(200);
+				} else {
+					$('.go-top').fadeOut(200);
+				}
+			});
+			
+			// Animate the scroll to top
+			$('.go-top').click(function(event) {
+				event.preventDefault();
+				
+				$('html, body').animate({scrollTop: 0}, 300);
+			})
+		});
+	</script>
+</body>
+</html>
