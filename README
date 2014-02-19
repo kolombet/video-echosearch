@@ -1,1 +1,5 @@
-video_view.html to watch video links preview
+video_view.html - to watch video links preview. makes ajax to video_get.php which talks with the base
+echoprint_base.php - connect to mysql config
+
+--old tools--
+echoprint_show.php - shows videos at simple page
