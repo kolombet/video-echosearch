@@ -3,7 +3,6 @@
 <head>
 	<title></title>
 	<meta charset="UTF-8">
-	<script type="text/javascript" src="script.js"></script>
 	<link rel="stylesheet" type="text/css" href="style.css">
 </head>
 <body>
@@ -40,11 +39,18 @@
 
 	<div id="video_container"></div>
 
+	<hr>
+
+	<div id="bottom_bar">
+		<textarea rows="4" cols="50" id="bad-links"></textarea>
+		<button id="collect-links">Собрать пиратские ссылки</button>
+	</div>
+
 	<footer>
 		<a href="#" class="go-top">&uarr; вверх &uarr;</a>
 	</footer>
 
-	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
 	<script>
 		$(document).ready(function() {
 			// Show or hide the sticky footer button
@@ -64,5 +70,7 @@
 			})
 		});
 	</script>
+
+	<script type="text/javascript" src="script.js"></script>
 </body>
 </html>

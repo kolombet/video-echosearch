@@ -1,48 +1,55 @@
 <?php
+	#Генерирует простую веб страничку с сылками на видео
 	$start_pos = 0;
-	$vid_count = 100;
+	$vid_count = 10;
 
 	if ($_GET['start'])
 		$start_pos = $_GET['start'];
 	if ($_GET['count'])
 		$vid_count = $_GET['count'];
-	if ($_GET['base'])
-		$sql_table = $_GET['base'];
-	else 
-		$sql_table="vkdata";
 
 	#Вызов функции соединения с базой данных
 	db_connect();
 	#Задание переменной с именем таблицы с данными
-	
+	$sql_table="vkdata";
 
-	$query = "SELECT * FROM ". $sql_table ." WHERE unic_id > ". $start_pos." ORDER BY unic_id ASC LIMIT 0 ,". $vid_count;
-	//echo $query;
-	$result = mysql_query($query); 
-
-    //$data = array();
-    if ($result == null)
-    	echo("empty query");
-	while($myrow = mysql_fetch_assoc($result)) {
-		$res = array(
-	        "unic_id" => $myrow['unic_id'],
-	        "id" => $myrow['id'],
-	        "owner_id" => $myrow['owner_id'],
-	        "photo" => $myrow['photo320'],
-	        "e_status" => $myrow['e_status'],
-	        "check_result" => $myrow['check_result'],
-	        "url_to_player" => $myrow['url_to_player']
-	    );
-	    $data[] = $res;
+	$unic_id = array();
+	$id = array(); 
+	$owner_id = array(); 
+	$photo = array(); 
+	$url_to_player = array(); 
+	$result = mysql_query("SELECT unic_id, id, owner_id, photo320, url_to_player FROM vkdata WHERE unic_id > ". $start_pos." LIMIT 0 ,". $vid_count ); 
+	while($myrow = mysql_fetch_assoc($result)) { 
+		$unic_id[] = $myrow['unic_id'];
+		$id[] = $myrow['id']; 
+		$owner_id[] = $myrow['owner_id']; 
+		$photo[] = $myrow['photo320']; 
+		$url_to_player[] = $myrow['url_to_player']; 
 	} 
-    
-    
-        
-    header('Access-Control-Allow-Origin: *');
-	header('Access-Control-Allow-Methods: GET, POST'); 
-	echo(json_encode($data));
 
-    
+	$str = "";
+	for ($i = 0; $i < count($id); $i += 2) {
+		$videoURL = "http://vk.com/video". $owner_id[$i] ."_". $id[$i];
+		
+		$img = "<img width=\"320\" height=\"240\" src=\"". $photo[$i] ."\">";
+		$str .= "<a href=\"". $videoURL ."\">". $img ."</a>";
+
+		$img = "<img width=\"320\" height=\"240\" src=\"". $photo[$i+1] ."\">";
+		$str .= "<a href=\"". $videoURL ."\">". $img ."</a>";
+
+
+		$str .= "<iframe src=\"". $url_to_player[$i] ."\" width=\"320\" height=\"240\"></iframe>";
+		$str .= "<iframe src=\"". $url_to_player[$i+1] ."\" width=\"320\" height=\"240\"></iframe>";
+
+		//if ($i%2==0)
+		$str .= " id: ". $unic_id[$i] ." ";
+		$str .= "<br>";
+	}
+	
+	include("form.html");
+	print_r($str);
+
+
 	#Функция соединения с базой данных
 	function db_connect(){
 		include_once('echoprint_base.php');

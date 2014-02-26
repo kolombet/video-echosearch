@@ -55,7 +55,7 @@ function reqVideos() {
     document.getElementById("search_result").innerHTML = "Загружаю ссылки...";
     
     console.log("req videos id: " + JSON.stringify(reqVars))
-    ajax.get("http://"+ location.host +"/video_get.php", reqVars, onVideosGet, true);
+    ajax.get(dataURL, reqVars, onVideosGet, true);
 }
 
 function onVideosGet(res) {
@@ -81,6 +81,7 @@ function showVideos(videos, type) {
     removeAllVideos();
 
     videos.forEach(function(video) {
+        //filters check
         if (type == 'pirate' && video.check_result != 1) 
             return;
         else if (type == 'other' && video.check_result == 1)
@@ -89,10 +90,12 @@ function showVideos(videos, type) {
 
         if (video != null) {
             //Generating results DOM
+            var videoDiv = document.createElement("div");
+
             var oImg=document.createElement("img");
             oImg.setAttribute('src', video.photo);
             oImg.setAttribute('alt', video.unic_id);
-            oImg.setAttribute('class', getTokyoCabStatus(video));
+            oImg.setAttribute('class', "TO_DELETE");
             oImg.setAttribute('title', "Айди видео" + video.unic_id + " " 
                 + getCheckResultInfo(video.check_result) + " " + video.e_status);
 
@@ -100,8 +103,44 @@ function showVideos(videos, type) {
             var linkHref = "http://vk.com/video" + video.owner_id + "_" + video.id;
             link.setAttribute('href', linkHref);
             link.appendChild(oImg);
+            videoDiv.appendChild(link);
 
-            document.getElementById("video_container").appendChild(link);
+            // var iframe = document.createElement("iframe");
+            // iframe.setAttribute('src', video.url_to_player);
+            // iframe.setAttribute('src', 'https://vk.com/video_ext.php?oid=112771611&id=164651683&hash=5f09d05370f8bf75');
+            // iframe.onload = function() {
+                // alert(this.innerHTML);
+                // console.log(JSON.stringify(this));
+            // };
+            // videoDiv.appendChild(iframe);
+
+            var deskr = document.createElement("a");
+            deskr.innerHTML = "Не удалять";
+            deskr.setAttribute('href', '')
+            deskr.setAttribute('class', 'not-pirate-link');
+            videoDiv.appendChild(deskr);
+
+            videoDiv.setAttribute('class', 'videoDiv');
+            videoDiv.setAttribute('id', video.id);
+            // videoDiv.appendChild(iframe);
+
+            document.getElementById("video_container").appendChild(videoDiv);
+        }
+    });
+
+    $('.not-pirate-link').click(function(e) {
+        e.preventDefault();
+
+        var img = $(this).parent().find("img")[0];
+        var vidType = img.getAttribute("class");
+
+        if (vidType == "GOOD_VIDEO") {
+            img.setAttribute("class", "");
+            this.innerHTML = "Не удалять";
+        }
+        else {
+            img.setAttribute("class", "GOOD_VIDEO");
+            this.innerHTML = "Удалять";
         }
     });
 
@@ -137,7 +176,6 @@ function getNodeStatus(video) {
 
 function getTokyoCabStatus(video) {
     if (video.check_result == 1) {
-
         return "BAD_VIDEO"
     } else if (video.check_result == 2) {
         if (video.e_status == "no results found (type 7)")
@@ -186,6 +224,15 @@ function onPageLoad() {
         showVideos(videoLinks, currentType);
     }
 
+    $('#collect-links').click(function(e) {
+        var badLinks = "";
+        jQuery.each($(".TO_DELETE").parent(), function() {
+            badLinks += this.getAttribute("href") + "\n";
+        });
+
+        $("#bad-links").html(badLinks);
+    });
+
     videoCountTF.oninput = reqVideos;
     currentPageTF.oninput = reqVideos;
     refreshBtn.onclick = reqVideos;
@@ -205,12 +252,28 @@ function onPageLoad() {
     else 
         currentPageTF.value = localStorage.getItem('currentPageTF');
     
-    videoCountTF.value = 500;
+    videoCountTF.value = videoCountOnPage;
 
     reqVideos();
+}
+
+function check() {
+    //ajax.get(dataURL, reqVars, onVideosGet, true);
+    url = "https://vk.com/video_ext.php?oid=112771611&id=164651683&hash=5f09d05370f8bf75";
+    ajax.get(url, {}, function(res) {
+        alert(res);
+    }, true);
+}
+
+function getURLParameter(name) {
+  return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search)||[,""])[1].replace(/\+/g, '%20'))||null
 }
 
 window.onload = onPageLoad;
 var videoLinks;
 var currentType = 'all';
-
+var checkType = 'COLLECT_LINKS';
+//var checkType = 'AUTO_CHECK';
+var dataURL = "http://"+ location.host +"/video_get.php";
+// var dataURL = "http://app.hair.su/video_search/video_get.php";
+var videoCountOnPage = 10;
